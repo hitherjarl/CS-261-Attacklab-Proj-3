@@ -1,0 +1,43 @@
+
+.pos 0
+irmovq stack, %rsp
+irmovq stack, %rbp
+irmovq ele1, %rsi
+pushq %rsi
+call rsum_list
+halt
+#################################################
+#Expected OUTPUT FOR TEST CASE2 IS: rax is cab instead of fed
+################################################
+
+#Professor's Linked List
+	.align 8
+ele1:
+	.quad 0x00b
+	.quad ele2
+ele2:
+	.quad 0x0a0
+	.quad ele3
+ele3:
+	.quad 0xc00
+	.quad 0
+
+rsum_list:
+	pushq %rbp	#Pushing the pointer
+	andq %rsi, %rsi	#checking if ls == 0
+	jne L5		#jump if not equal
+	irmovq $0, %rax	#return 0
+	jmp L6		#Jump to L6
+L5:
+	pushq %r11		#Pushing r11 to save the value
+	mrmovq (%rsi), %r11	#Getting value and storing to val	
+	mrmovq 8(%rsi), %rsi	#advancing the pointer and storing into ls
+	call rsum_list		#Calling the function
+	addq %r11, %rax		#adding rest & val
+	popq %r11		#pop the value off to get orgininal value
+L6:
+	popq %rbp	#popping off the base pointer
+	ret		#return
+
+.pos 0x200
+stack:

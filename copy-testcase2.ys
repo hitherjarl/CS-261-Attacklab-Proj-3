@@ -1,0 +1,58 @@
+#testcase 2
+
+
+.pos 0
+irmovq stack, %rsp	#Pushing stack
+irmovq stack, %rbp	#pusing basic pointer
+irmovq src, %rdi	#Moving source into rdi
+irmovq dest, %rcx	#Moving dest into register
+irmovq $0x3, %rsi	#moving 3(loop counter) into register
+pushq %rsi		#pushing rsi
+pushq %rdi		#pushing rdi
+pushq %rcx		#pushing rcx
+call copy_block		#calling function
+halt			#stopping program
+
+#TEST CASE 2
+###############
+#EXPECTED OUTPUT CASE IS:  edc instead of fed#
+##############
+
+.align 8
+#source block
+src:
+	.quad 0x00c 	#edc
+	.quad 0x0d0
+	.quad 0xe00
+
+#Destination Block
+dest:
+	.quad 0x111
+	.quad 0x222
+	.quad 0x333
+
+copy_block:
+	pushq %rbp		#pushing rbp
+	irmovq $0, %rax		#imm to reg		
+	rrmovq %rsi, %r11	#mov reg to reg
+	rrmovq %rdi, %r10	#move reg to reg
+	rrmovq %rcx, %r9	#move reg to reg
+	irmovq $8, %r8		#move imm to reg
+	irmovq $-1, %r12	#move imm to reg
+	jmp Loop
+
+Loop:
+	mrmovq (%r10), %r13	#mem to reg
+	rmmovq %r13, (%r9)	#reg to mem
+	xorq %r13, %rax		#xor two registers
+	addq %r8, %r10		#adding two reg
+	addq %r8, %r9		#adding two reg
+	addq %r12, %r11		#adding two reg
+	jne Loop
+
+
+	popq %rbp
+	ret
+
+.pos 0x400
+stack:

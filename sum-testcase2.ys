@@ -1,0 +1,44 @@
+
+.pos 0
+irmovq stack,%rsp
+irmovq stack,%rbp
+irmovq ele1,%rcx
+pushq %rcx
+call sum_list:
+halt
+#####################################################
+# The expected output for TEST CASE 2 for rax is: bdc
+#####################################################
+
+
+#Professors Linked List
+.align 8
+ele1:
+.quad 0x00c
+.quad ele2
+ele2:
+.quad 0x0d0
+.quad ele3
+ele3:
+.quad 0xb00
+.quad 0
+
+sum_list:
+	pushq %rbp	#pushing rbp to keep the value
+	xorq %rax, %rax 	#xoring
+	rrmovq %rsp, %rbp	#Moving register to register
+	addq %rdi, %rcx		#adding values
+	andq %rcx, %rcx		#Anding to see if returns 0 or 1
+	je finish
+Loop:
+	mrmovq (%rcx), %r12	#moving from memory to register
+	addq %r12, %rax		#adding register to rax
+	mrmovq 8(%rcx), %rcx	#Moving memory to register rcx
+	andq %rcx, %rcx		#Anding to see if returns 0 or 1
+	jne Loop
+finish:
+	rrmovq %rbp, %rsp	#moving register to register
+	popq %rbp		#popping off register
+	ret			#Returning
+.pos 0x200
+stack:
